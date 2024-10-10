@@ -36,7 +36,6 @@ string encrypt(string text, vector<vector<int>>& keyMatrix) {
         int a = text[i] - 'A';   
         int b = text[i + 1] - 'A'; 
 
-        // Perform encryption
         int c = (keyMatrix[0][0] * a + keyMatrix[0][1] * b) % 26;
         int d = (keyMatrix[1][0] * a + keyMatrix[1][1] * b) % 26;
 
@@ -58,7 +57,6 @@ string decrypt(string text, vector<vector<int>>& keyMatrix) {
     adjMatrix[1][0] = -keyMatrix[1][0] * invDet % 26;
     adjMatrix[1][1] = keyMatrix[0][0] * invDet % 26;
 
-    // Make sure all values are positive
     for (int i = 0; i < 2; i++) {
         for (int j = 0; j < 2; j++) {
             if (adjMatrix[i][j] < 0) {
