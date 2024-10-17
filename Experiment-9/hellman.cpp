@@ -57,8 +57,11 @@ public:
     Sender(long long privKey, long long p, long long g) {
         privateKey = privKey;
         publicKey = mod_exp(g, privateKey, p);
+        cout << "Sender (User A) private key: " << privateKey << endl;
+        cout << "Sender (User A) public key: " << publicKey << endl;
     }
     long long compute_shared_key(long long receiverPublicKey, long long p) {
+        cout << "Sender (User A) computing shared key with User B's public key: " << receiverPublicKey << endl;
         return mod_exp(receiverPublicKey, privateKey, p);
     }
 };
@@ -69,8 +72,11 @@ public:
     Receiver(long long privKey, long long p, long long g) {
         privateKey = privKey;
         publicKey = mod_exp(g, privateKey, p);
+        cout << "Receiver (User B) private key: " << privateKey << endl;
+        cout << "Receiver (User B) public key: " << publicKey << endl;
     }
     long long compute_shared_key(long long senderPublicKey, long long p) {
+        cout << "Receiver (User B) computing shared key with User A's public key: " << senderPublicKey << endl;
         return mod_exp(senderPublicKey, privateKey, p);
     }
 };
@@ -97,14 +103,19 @@ int main() {
     Sender userA(privateA, p, g);
     Receiver userB(privateB, p, g);
 
-    cout << "\nPublic key of User A: " << userA.publicKey;
-    cout << "\nPublic key of User B: " << userB.publicKey << endl;
+    cout << "\nPublic keys exchanged:" << endl;
+    cout << "User A sends public key: " << userA.publicKey << endl;
+    cout << "User B sends public key: " << userB.publicKey << endl;
 
     sharedKeyA = userA.compute_shared_key(userB.publicKey, p);
     sharedKeyB = userB.compute_shared_key(userA.publicKey, p);
 
+    cout << "\nShared key calculated by User A: " << sharedKeyA << endl;
+    cout << "Shared key calculated by User B: " << sharedKeyB << endl;
+
     if (sharedKeyA == sharedKeyB) {
         cout << "\nShared secret key (User A and User B): " << sharedKeyA << endl;
+        cout << "Both users have successfully computed the same shared secret key!" << endl;
     } else {
         cout << "\nError: Shared keys do not match!" << endl;
     }
