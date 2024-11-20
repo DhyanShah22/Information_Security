@@ -2,28 +2,30 @@
 #include <string>
 #include <algorithm>
 
+using namespace std;
+
 class Sender {
 public:
-    Sender(const std::string& plaintext, const std::string& key)
+    Sender(const string& plaintext, const string& key)
         : plaintext(plaintext), key(key) {
-        min_letter = *std::min_element(plaintext.begin(), plaintext.end());
+        min_letter = *min_element(plaintext.begin(), plaintext.end());
         
         extended_plaintext = plaintext;
         if (plaintext.size() % key.size() != 0) {
-            extended_plaintext += std::string(key.size() - (plaintext.size() % key.size()), min_letter);
+            extended_plaintext += string(key.size() - (plaintext.size() % key.size()), min_letter);
         }
     }
 
-    std::string getMinLetter() const {
-        return std::string(1, min_letter);
+    string getMinLetter() const {
+        return string(1, min_letter);
     }
 
-    std::string getExtendedPlaintext() const {
+    string getExtendedPlaintext() const {
         return extended_plaintext;
     }
 
-    std::string encrypt() {
-        std::string ciphertext;
+    string encrypt() {
+        string ciphertext;
         int k = key.size();
         
         for (int i = 0; i < extended_plaintext.size(); ++i) {
@@ -37,33 +39,33 @@ public:
     }
 
 private:
-    std::string plaintext;
-    std::string key;
-    std::string extended_plaintext;
+    string plaintext;
+    string key;
+    string extended_plaintext;
     char min_letter;
 };
 
 class Receiver {
 public:
-    void displayCiphertext(const std::string& ciphertext) const {
-        std::cout << "Ciphertext: " << ciphertext << std::endl;
+    void displayCiphertext(const string& ciphertext) const {
+        cout << "Ciphertext: " << ciphertext << endl;
     }
     
-    void displayMinLetter(const std::string& min_letter) const {
-        std::cout << "Minimum letter used as filler: " << min_letter << std::endl;
+    void displayMinLetter(const string& min_letter) const {
+        cout << "Minimum letter used as filler: " << min_letter << endl;
     }
 
-    void displayExtendedPlaintext(const std::string& extended_plaintext) const {
-        std::cout << "Revised plaintext after padding: " << extended_plaintext << std::endl;
+    void displayExtendedPlaintext(const string& extended_plaintext) const {
+        cout << "Revised plaintext after padding: " << extended_plaintext << endl;
     }
 };
 
 int main() {
-    std::string plaintext, key;
-    std::cout << "Enter plaintext (in capital letters only): ";
-    std::cin >> plaintext;
-    std::cout << "Enter key (in numbers only): ";
-    std::cin >> key;
+    string plaintext, key;
+    cout << "Enter plaintext (in capital letters only): ";
+    cin >> plaintext;
+    cout << "Enter key (in numbers only): ";
+    cin >> key;
 
     Sender sender(plaintext, key);
     Receiver receiver;
@@ -71,7 +73,7 @@ int main() {
     receiver.displayMinLetter(sender.getMinLetter());
     receiver.displayExtendedPlaintext(sender.getExtendedPlaintext());
 
-    std::string ciphertext = sender.encrypt();
+    string ciphertext = sender.encrypt();
     receiver.displayCiphertext(ciphertext);
 
     return 0;

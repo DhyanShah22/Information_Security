@@ -2,105 +2,74 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <numeric>
+using namespace std;
 
-std::string encrypt(const std::string &text, const std::string &key) {
-    int numRows = text.size() / key.size();
-    if (text.size() % key.size() != 0) {
-        numRows++; 
-    }
-
-    std::vector<std::vector<char>> matrix(numRows, std::vector<char>(key.size(), 'X'));
+string encrypt(const string &text, const string &key){
+    int numRows = (text.size() + key.size() - 1) / key.size();
+    vector<vector<char>> matrix(numRows, vector<char>(key.size(), 'X'));
     int index = 0;
-    for (int r = 0; r < numRows; r++) {
-        for (int c = 0; c < key.size(); c++) {
-            if (index < text.size()) {
-                matrix[r][c] = text[index++];
-            }
+    for(int r = 0; r <numRows; r++){
+        for(int c = 0; c < key.size(); c++){
+            if(index < text.size()) matrix[r][c] = text[index++];
         }
     }
 
-    std::vector<int> colOrder(key.size());
-    for (int i = 0; i < key.size(); i++) {
-        colOrder[i] = i;
-    }
+    vector<int>colOrder(key.size());
+    iota(colOrder.begin(), colOrder.end(), 0);
+    sort(colOrder.begin(), colOrder.end(), [&](int a, int b) { return key[a] < key[b];});
 
-    std::sort(colOrder.begin(), colOrder.end(), [&](int a, int b) {
-        return key[a] < key[b];
-    });
-
-    std::string cipherText;
-    for (int col : colOrder) {
-        for (int row = 0; row < numRows; row++) {
-            cipherText += matrix[row][col];
+    string ciphertext;
+    for(int col : colOrder){
+        for(int row = 0; row < numRows; row++){
+            ciphertext += matrix[row][col];
         }
     }
-
-    return cipherText;
+    return ciphertext;
 }
+string decrypt(const string &cipherText, const string &key) {
+    int numRows = (cipherText.size() + key.size() - 1) / key.size();
+    vector<int> colOrder(key.size());
+    iota(colOrder.begin(), colOrder.end(), 0);
+    sort(colOrder.begin(), colOrder.end(), [&](int a, int b) { return key[a] < key[b]; });
 
-std::string decrypt(const std::string &cipherText, const std::string &key) {
-    int numRows = cipherText.size() / key.size();
-    if (cipherText.size() % key.size() != 0) {
-        numRows++;
-    }
-
-    std::vector<int> colOrder(key.size());
-    for (int i = 0; i < key.size(); i++) {
-        colOrder[i] = i;
-    }
-
-    std::sort(colOrder.begin(), colOrder.end(), [&](int a, int b) {
-        return key[a] < key[b];
-    });
-
-    std::vector<std::vector<char>> matrix(numRows, std::vector<char>(key.size()));
-
+    vector<vector<char>> matrix(numRows, vector<char>(key.size()));
     int index = 0;
-    for (int col : colOrder) {
-        for (int row = 0; row < numRows; row++) {
-            if (index < cipherText.size()) {
-                matrix[row][col] = cipherText[index++];
-            }
-        }
-    }
+    for (int col : colOrder)
+        for (int row = 0; row < numRows; row++)
+            if (index < cipherText.size()) matrix[row][col] = cipherText[index++];
 
-    std::string plainText;
-    for (int r = 0; r < numRows; r++) {
-        for (int c = 0; c < key.size(); c++) {
+    string plainText;
+    for (int r = 0; r < numRows; r++)
+        for (int c = 0; c < key.size(); c++)
             plainText += matrix[r][c];
-        }
-    }
 
-    plainText.erase(std::find(plainText.begin(), plainText.end(), 'X'), plainText.end());
+    plainText.erase(find(plainText.begin(), plainText.end(), 'X'), plainText.end());
     return plainText;
 }
 
 int main() {
-    std::string text, key;
+    string text, key;
     int choice;
 
-    std::cout << "Enter 0 for Encrypt and 1 for Decrypt: ";
-    std::cin >> choice;
-    std::cin.ignore(); 
+    cout << "Enter 0 for Encrypt and 1 for Decrypt: ";
+    cin >> choice;
+    cin.ignore();
 
     if (choice == 0) {
-        std::cout << "Enter the text to encrypt: ";
-        std::getline(std::cin, text);
-        std::cout << "Enter the key (a word): ";
-        std::getline(std::cin, key);
-
-        std::string encryptedText = encrypt(text, key);
-        std::cout << "Encrypted Text: " << encryptedText << std::endl;
+        cout << "Enter the text to encrypt: ";
+        getline(cin, text);
+        cout << "Enter the key: ";
+        getline(cin, key);
+        cout << "Encrypted Text: " << encrypt(text, key) << endl;
     } else if (choice == 1) {
-        std::cout << "Enter the text to decrypt: ";
-        std::getline(std::cin, text);
-        std::cout << "Enter the key (a word): ";
-        std::getline(std::cin, key);
-
-        std::string decryptedText = decrypt(text, key);
-        std::cout << "Decrypted Text: " << decryptedText << std::endl;
+        cout << "Enter the text to decrypt: ";
+        getline(cin, text);
+        cout << "Enter the key: ";
+        getline(cin, key);
+        cout << "Decrypted Text: " << decrypt(text, key) << endl;
     } else {
-        std::cout << "Invalid choice! Please enter 0 or 1." << std::endl;
+        cout << "Invalid choice!" << endl;
     }
 
     return 0;

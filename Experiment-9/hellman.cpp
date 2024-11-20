@@ -16,56 +16,6 @@ long long mod_exp(long long base, long long exp, long long mod) {
     return result;
 }
 
-long long gcd(long long a, long long b) {
-    if (b == 0)
-        return a;
-    return gcd(b, a % b);
-}
-
-long long find_primitive_root(long long p) {
-    vector<long long> factors;
-    long long phi = p - 1;
-    long long n = phi;
-
-    for (long long i = 2; i * i <= n; i++) {
-        if (n % i == 0) {
-            factors.push_back(i);
-            while (n % i == 0)
-                n /= i;
-        }
-    }
-    if (n > 1)
-        factors.push_back(n);
-
-    for (long long res = 2; res <= p; res++) {
-        bool is_primitive = true;
-        for (long long factor : factors) {
-            if (mod_exp(res, phi / factor, p) == 1) {
-                is_primitive = false;
-                break;
-            }
-        }
-        if (is_primitive)
-            return res;
-    }
-    return -1; 
-}
-
-class Sender {
-public:
-    long long privateKey, publicKey;
-    Sender(long long privKey, long long p, long long g) {
-        privateKey = privKey;
-        publicKey = mod_exp(g, privateKey, p);
-        cout << "Sender (User A) private key: " << privateKey << endl;
-        cout << "Sender (User A) public key: " << publicKey << endl;
-    }
-    long long compute_shared_key(long long receiverPublicKey, long long p) {
-        cout << "Sender (User A) computing shared key with User B's public key: " << receiverPublicKey << endl;
-        return mod_exp(receiverPublicKey, privateKey, p);
-    }
-};
-
 class Receiver {
 public:
     long long privateKey, publicKey;
@@ -81,19 +31,30 @@ public:
     }
 };
 
+class Sender {
+public:
+    long long privateKey, publicKey;
+    Sender(long long privKey, long long p, long long g) {
+        privateKey = privKey;
+        publicKey = mod_exp(g, privateKey, p);
+        cout << "Public Key (USER A): "<< publicKey <<endl;
+        cout << "Private Key (USER B): "<< privateKey<<endl;
+    }
+
+    long long compute_shared_key(long long receiverPublicKey, long long p){
+        cout<<"Public key recieved from USER B: " << receiverPublicKey;
+        return mod_exp(receiverPublicKey, privateKey, p);
+    }
+};
+
 int main() {
     long long p, g, privateA, privateB, sharedKeyA, sharedKeyB;
 
     cout << "Enter a large prime number (p): ";
     cin >> p;
 
-    g = find_primitive_root(p);
-    if (g == -1) {
-        cout << "No primitive root found for the given prime." << endl;
-        return -1;
-    }
-
-    cout << "The primitive root modulo " << p << " is: " << g << endl;
+    cout << "Enter a primitive root modulo " << p << " (g): ";
+    cin >> g;
 
     cout << "User A, enter your private key: ";
     cin >> privateA;

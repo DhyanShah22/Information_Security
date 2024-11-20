@@ -5,23 +5,19 @@
 
 using namespace std;
 
-int gcd(int a, int b) {
-    return b == 0 ? a : gcd(b, a % b);
-}
 
-int modExp(int base, int exp, int mod) {
+int modExp(int base, int exp, int mod){
     int result = 1;
-    base = base % mod;
-    while (exp > 0) {
-        if (exp % 2 == 1) {
+    base =  base % mod;
+    while(exp > 0){
+        if(exp % 2 == 1){
             result = (result * base) % mod;
         }
-        exp = exp >> 1;
+        exp >> 1;
         base = (base * base) % mod;
     }
     return result;
 }
-
 string encrypt(string plaintext, int e, int n) {
     string ciphertext = "";
     for (char c : plaintext) {
@@ -43,14 +39,13 @@ string decrypt(string ciphertext, int d, int n) {
     return plaintext;
 }
 
-int modInverse(int a, int m) {
-    a = a % m;
-    for (int x = 1; x < m; x++) {
-        if ((a * x) % m == 1) {
-            return x;
+int modInverse(int e, int phi){
+    e = e % phi;
+    for(int d = 0; d < phi; d++){
+        if((e * d) % phi == 1){
+            return d;
         }
     }
-    return 1;
 }
 
 int main() {
